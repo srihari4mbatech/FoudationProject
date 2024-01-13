@@ -1,12 +1,28 @@
 import streamlit as st
 import numpy as np
 import pandas as pd
+import spacy
 from tensorflow.keras.models import load_model
 from sklearn.preprocessing import MinMaxScaler
  
 # Load the pre-trained model and scaler
 loaded_model = load_model("stock_price_prediction_model.h5")
 scaler = MinMaxScaler()  # Assuming you have saved the scaler during training
+nlp= spacy.load('en_core_web_sm')
+
+import requests
+
+API_URL = "https://api-inference.huggingface.co/models/ProsusAI/finbert"
+headers = {"Authorization": "Bearer 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"}
+
+def query(payload):
+	response = requests.post(API_URL, headers=headers, json=payload)
+	return response.json()
+	
+# output = query({
+# 	"inputs": "I like you. I love you",
+# })
+
  
 def preprocess_input_data(open_val, high_val, low_val, volume_val, close_val,
                           headline, content):
@@ -25,9 +41,28 @@ def preprocess_input_data(open_val, high_val, low_val, volume_val, close_val,
  
 def process_news_data(headline, content):
     # Placeholder function, replace with actual sentiment analysis logic
-    positive_sentiment_val = 0.5
-    negative_sentiment_val = 0.3
-    neutral_sentiment_val = 0.2
+    #def genSentforpsg(StrText,WordLst):
+    # WordLst= ['Exxon Mobil','Exxon']
+    outputSentLst=[]
+    docs=nlp(headline+" "+content)
+    for sent in docs.sents:
+        # for ent in sent.ents:
+        #     if ent.text in WordLst:
+        output=query({"inputs":sent.text[0:512],})
+        outputSentLst.append(output[0])
+    sentDf= pd.DataFrame(outputSentLst)
+    if 'label' in sentDf.columns: 
+        sentDict=sentDf.groupby('label')['score'].mean().to_dict()
+    else:
+        sentDict= {'positive':0,}
+    #return sentDict
+    positive_sentiment_val,negative_sentiment_val,neutral_sentiment_val = 0,0,0
+    if 'positive' in sentDict.keys():
+         positive_sentiment_val = sentDict['positive']
+    if 'negative' in sentDict.keys():
+        negative_sentiment_val = sentDict['negative']
+    if 'neutral' in sentDict.keys():
+        neutral_sentiment_val = sentDict['neutral']
     return positive_sentiment_val, negative_sentiment_val, neutral_sentiment_val
  
 def main():
