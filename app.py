@@ -52,7 +52,7 @@ def process_news_data(headline, content):
         #     if ent.text in WordLst:
         output=query({"inputs":sent.text[0:512],})
         print(output)
-        outputSentLst.append(output[0])
+        outputSentLst.append(output)
     sentDf= pd.DataFrame(outputSentLst)
     if 'label' in sentDf.columns: 
         sentDict=sentDf.groupby('label')['score'].mean().to_dict()
