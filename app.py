@@ -2,13 +2,14 @@ import streamlit as st
 import numpy as np
 import pandas as pd
 import spacy
+from spacy_download import load_spacy
 from tensorflow.keras.models import load_model
 from sklearn.preprocessing import MinMaxScaler
  
 # Load the pre-trained model and scaler
 loaded_model = load_model("stock_price_prediction_model.h5")
 scaler = MinMaxScaler()  # Assuming you have saved the scaler during training
-nlp= spacy.load('en_core_web_sm')
+nlp= load_spacy('en_core_web_sm')
 
 import requests
 
