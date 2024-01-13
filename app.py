@@ -2,12 +2,14 @@ import streamlit as st
 import numpy as np
 import pandas as pd
 import spacy
+import joblib
 # from spacy_download import load_spacy
 from tensorflow.keras.models import load_model
 from sklearn.preprocessing import MinMaxScaler
  
 # Load the pre-trained model and scaler
 loaded_model = load_model("stock_price_prediction_model.h5")
+loaded_scaler = joblib.load("scaler.joblib")
 scaler = MinMaxScaler()  # Assuming you have saved the scaler during training
 # nlp= load_spacy('en_core_web_sm')
 nlp = spacy.load('en_core_web_sm')
@@ -37,7 +39,7 @@ def preprocess_input_data(open_val, high_val, low_val, volume_val, close_val,
                             0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]])
  
     # Scale the input data
-    scaled_input_data = scaler.fit_transform(input_data)
+    scaled_input_data = loaded_scaler.transform(input_data)
  
     return scaled_input_data
  
@@ -51,8 +53,8 @@ def process_news_data(headline, content):
         # for ent in sent.ents:
         #     if ent.text in WordLst:
         output=query({"inputs":sent.text[0:512],})
-        print(output)
-        outputSentLst.append(output)
+        # st.text(output[0])
+        outputSentLst=outputSentLst + output[0]
     sentDf= pd.DataFrame(outputSentLst)
     if 'label' in sentDf.columns: 
         sentDict=sentDf.groupby('label')['score'].mean().to_dict()
@@ -66,7 +68,7 @@ def process_news_data(headline, content):
         negative_sentiment_val = sentDict['negative']
     if 'neutral' in sentDict.keys():
         neutral_sentiment_val = sentDict['neutral']
-    st.text(positive_sentiment_val,negative_sentiment_val,neutral_sentiment_val)
+    # st.text(str(sentDict['positive'])+" "+str(sentDict['negative'])+" "+str(sentDict['neutral']))
     return positive_sentiment_val, negative_sentiment_val, neutral_sentiment_val
  
 def main():
