@@ -19,7 +19,7 @@ def preprocess_input_data(open_val, high_val, low_val, volume_val, close_val,
                             0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]])
  
     # Scale the input data
-    scaled_input_data = scaler.transform(input_data)
+    scaled_input_data = scaler.fit_transform(input_data)
  
     return scaled_input_data
  
