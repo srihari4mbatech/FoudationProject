@@ -1,2 +1,2 @@
-python3 -m pip3 install spacy
+python3 -m pip install spacy
 python3 -m spacy install en_core_web_sm
