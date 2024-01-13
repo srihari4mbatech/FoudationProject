@@ -63,6 +63,7 @@ def process_news_data(headline, content):
         negative_sentiment_val = sentDict['negative']
     if 'neutral' in sentDict.keys():
         neutral_sentiment_val = sentDict['neutral']
+    st.text(positive_sentiment_val,negative_sentiment_val,neutral_sentiment_val)
     return positive_sentiment_val, negative_sentiment_val, neutral_sentiment_val
  
 def main():
