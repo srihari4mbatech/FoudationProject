@@ -22,7 +22,7 @@ def query(payload):
 	return response.json()
 	
 # output = query({
-# 	"inputs": "I like you. I love you",
+# 	"inputs": "I like you. I love you",s
 # })
 
  
@@ -51,6 +51,7 @@ def process_news_data(headline, content):
         # for ent in sent.ents:
         #     if ent.text in WordLst:
         output=query({"inputs":sent.text[0:512],})
+        print(output)
         outputSentLst.append(output[0])
     sentDf= pd.DataFrame(outputSentLst)
     if 'label' in sentDf.columns: 
